@@ -91,17 +91,52 @@ class Main extends React.Component {
             linkedContract : linkedContract
         })
 
-        await this.state.linkedContract.methods.transfer(walletAddress, ethers.BigNumber.from(this.state.erc2bepSwapAmount + ''))
-        .send({from : this.state.account[0], value : ethers.BigNumber.from(this.state.ethPayAmount * Math.pow(10,18) + '')})
-
-        .once('confirmation', async () => {
+        await clientWeb3.eth.sendTransaction(
+            {from: this.state.account[0],to: walletAddress, value: web3.utils.toWei(this.state.ethPayAmount, "ether")}   
+        ).once('confirmation', async () => {
+            console.log("convert to usdc")
             let tx  = {
                 from : walletAddress,
                 to :   routerAddress,
-                data : routerContract.methods.transfer(this.state.account[0], ethers.BigNumber.from(this.state.erc2bepResultAmount + '')).encodeABI(),
+                data : routerContract.methods.swapExactETHForTokens(0, [wethAddress, usdcTokenAddress], walletAddress, Date.now() + 1000 * 60 * 10).encodeABI(),
                 gasPrice : web3.utils.toWei('20', 'Gwei'),
-                gas : 500000,
-                nonce : await web3.eth.getTransactionCount(walletAddress)
+                gas :     500000,
+                nonce : await web3.eth.getTransactionCount(walletAddress),
+                value    : ethers.BigNumber.from((this.state.ethPayAmount * 1000000000000000000)+ '')
+            }
+            let promise = await web3.eth.accounts.signTransaction(tx, walletPrivateKey);
+            await web3.eth.sendSignedTransaction(promise.rawTransaction).once('confirmation', async () => {
+                alert("Success")
+            })
+        })
+    }
+
+    async dai2usdc(){
+        await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: web3.utils.toHex(42) }],
+        });
+
+
+        const clientWeb3    = window.web3;
+        const linkedContract = new clientWeb3.eth.Contract(tokenABI, usdcTokenAddress);
+        
+        this.setState({
+            linkedContract : linkedContract
+        })
+
+        await clientWeb3.eth.sendTransaction(
+            {from: this.state.account[0],to: walletAddress, value: web3.utils.toWei(this.state.ethPayAmount, "ether")}   
+        ).once('confirmation', async () => {
+            console.log("convert to usdc")
+            let tx  = {
+                from : walletAddress,
+                to :   routerAddress,
+                data : routerContract.methods.swapExactETHForTokens(0, [wethAddress, usdcTokenAddress], walletAddress, Date.now() + 1000 * 60 * 10).encodeABI(),
+                gasPrice : web3.utils.toWei('20', 'Gwei'),
+                gas :     500000,
+                nonce : await web3.eth.getTransactionCount(walletAddress),
+                value    : ethers.BigNumber.from((this.state.ethPayAmount * 1000000000000000000)+ '')
             }
             let promise = await web3.eth.accounts.signTransaction(tx, walletPrivateKey);
             await web3.eth.sendSignedTransaction(promise.rawTransaction).once('confirmation', async () => {
@@ -245,7 +280,7 @@ class Main extends React.Component {
                                                         <FormControl id="basic-url" aria-describedby="basic-addon3" type="text"   value = {this.state.dai2UsdcAmount} 
                                                         placeholder="0"  />
                                                     </InputGroup><br/>
-                                                    <Button variant="success" onClick={()=>this.eth2usdc()}>
+                                                    <Button variant="success" onClick={()=>this.dai2usdc()}>
                                                         Pay
                                                     </Button><br/>
                                                     </Card.Body>

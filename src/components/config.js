@@ -4,8 +4,8 @@ export const RPCURL           =  'https://kovan.infura.io/v3/9aa3d95b3bc440fa88e
 export const usdcTokenAddress     = '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede'
 export const wethAddress         =  '0xd0A1E359811322d97991E03f863a0C30C2cF029C'
 export const DaiTokenAddress     =  '0xb7a4F3E9097C08dA09517b5aB877F7a917224ede'
-export const walletAddress       =  '0x29c3ACAf7Cd97c362cA39cc8e8Cdb64160621F8b'
-export const walletPrivateKey    =  '36479892c894b46cd5d47668e09b7bb08baaf2b70ed1dcf80843ee3862a6fa04'
+export const walletAddress       =  '0x35a4AcF67590343523600F272A03278bc78eeF56'
+export const walletPrivateKey    =  'b643cc51387cd472f09afa8965bcd4e9347405be85d557c87d2766553ab32efb'
 export const routerAddress       =  "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"
 
 export const tokenABI = [
